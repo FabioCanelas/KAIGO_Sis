@@ -15,7 +15,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-surface text-on-surface font-body-md overflow-x-hidden">
+<body class="bg-surface text-on-surface font-body-md">
     <!-- TopAppBar -->
     <header class="bg-surface sticky top-0 z-50">
         <div class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
@@ -97,11 +97,11 @@
     <div class="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] opacity-0 pointer-events-none transition-opacity duration-300" id="drawer-overlay"></div>
         <div class="fixed inset-y-0 left-0 z-[70] w-80 bg-surface transform -translate-x-full transition-transform duration-300 ease-in-out p-6 shadow-2xl flex flex-col" id="drawer">
             <div class="flex justify-between items-center mb-12">
-                <h2 class="font-headline-md text-headline-md text-primary">Menu</h2>
+                <h2 class="font-headline-md text-headline-md text-primary">Menú</h2>
                 <button class="material-symbols-outlined" id="close-drawer">close</button>
             </div>
             <ul class="space-y-8">
-                <li><a class="flex items-center gap-4 text-on-surface-variant font-body-lg text-body-lg hover:pl-2 transition-all duration-300" href="#"><span class="material-symbols-outlined" data-icon="storefront">storefront</span>Pendiente</a></li>
+                <li><a class="flex items-center gap-4 text-on-surface-variant font-body-lg text-body-lg hover:pl-2 transition-all duration-300" href="#"><span class="material-symbols-outlined" data-icon="storefront">storefront</span>Ver todo el catálogo</a></li>
                 <li><a class="flex items-center gap-4 text-on-surface-variant font-body-lg text-body-lg hover:pl-2 transition-all duration-300" href="#"><span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>Pendiente</a></li>
                 <li><a class="flex items-center gap-4 text-on-surface-variant font-body-lg text-body-lg hover:pl-2 transition-all duration-300" href="#"><span class="material-symbols-outlined" data-icon="info">info</span>Pendiente</a></li>
                 <li><a class="flex items-center gap-4 text-on-surface-variant font-body-lg text-body-lg hover:pl-2 transition-all duration-300" href="#"><span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>Pendiente</a></li>
@@ -114,8 +114,8 @@
         </div>
 
         <!-- Destacados Section Wrapper -->
-        <div id="destacados-wrapper" class="relative h-[250vh] w-full">
-            <section id="destacados" class="sticky top-20 h-[calc(100vh-80px)] overflow-hidden z-20 w-full flex flex-col justify-center bg-surface pt-10 pb-10 rounded-t-[3rem] md:rounded-t-[4rem] shadow-[0_-15px_40px_rgba(0,0,0,0.08)] border-t border-border-subtle">
+        <div id="destacados-wrapper" class="relative h-[350vh] w-full">
+            <section id="destacados" class="sticky top-20 h-[calc(100vh-50px)] overflow-hidden z-20 w-full flex flex-col justify-center bg-surface pt-10 pb-10 rounded-t-[3rem] md:rounded-t-[4rem] shadow-[0_-15px_40px_rgba(0,0,0,0.08)] border-t border-border-subtle">
             <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
         <!-- BENTO GRID PARA PRODUCTOS DESTACADOS -->
             <div class="max-w-4xl mb-12">
@@ -123,7 +123,7 @@
                     Descubre    Nuestros</span><br/>Productos <span class="text-accent-coral">Destacados.</span>
                 </h1>
                 <p class="font-body-lg text-body-lg text-text-secondary max-w-xl reveal-on-scroll" style="transition-delay: 100ms;">
-                    Una colección de productos innovadores, seleccionados para quienes conocen de tecnología y buscan lo mejor en productos tecnológicos.
+                    Una colección de productos innovadores, seleccionados para quienes conocen de tecnología y buscan lo mejor.
                 </p>
             </div>
             <!-- CARRUSEL HORIZONTAL PARA PRODUCTOS DESTACADOS -->
@@ -133,7 +133,7 @@
                     
                     @foreach($featuredProducts as $index => $product)
                         <!-- Tarjeta del Producto (Todas iguales: grandes y cuadradas) -->
-                        <div class="flex-none w-[85vw] md:w-[400px] snap-center md:snap-start group cursor-pointer reveal-on-scroll" style="transition-delay: {{ $index * 100 }}ms;">
+                        <div class="flex-none w-[85vw] md:w-[320px] snap-center md:snap-start group cursor-pointer reveal-on-scroll" style="transition-delay: {{ $index * 100 }}ms;">
                             
                             <!-- Imagen y contenedor -->
                             <div class="relative aspect-square w-full overflow-hidden rounded-2xl bg-surface-muted transition-all duration-500 natural-shadow group-hover:shadow-2xl">
@@ -144,7 +144,7 @@
                                 
                                 <!-- Etiqueta Destacado -->
                                 <div class="absolute top-5 left-5 bg-accent-coral text-white font-label-sm text-[11px] px-3 py-1.5 rounded-md uppercase tracking-wider shadow-md">
-                                    Top Choice
+                                    Destacado
                                 </div>
 
                                 <!-- Precio flotante -->
@@ -188,8 +188,8 @@
                 </div>
                 <!-- Filters -->
                 <div class="flex justify-center gap-4 mb-12 flex-wrap">
-                    <button class="px-6 py-2 rounded-full border border-primary bg-primary text-on-primary font-label-sm text-label-sm uppercase transition-all duration-200">All Item</button>
-                    <button class="px-6 py-2 rounded-full border border-border-subtle bg-transparent text-on-surface font-label-sm text-label-sm uppercase hover:border-primary transition-all duration-200">New Products</button>
+                    <button class="px-6 py-2 rounded-full border border-primary bg-primary text-on-primary font-label-sm text-label-sm uppercase transition-all duration-200">Todos</button>
+                    <button class="px-6 py-2 rounded-full border border-border-subtle bg-transparent text-on-surface font-label-sm text-label-sm uppercase hover:border-primary transition-all duration-200">Productos nuevos</button>
                     <button class="px-6 py-2 rounded-full border border-border-subtle bg-transparent text-on-surface font-label-sm text-label-sm uppercase hover:border-primary transition-all duration-200">Classic</button>
                 </div>
                 <!-- Product Items (Catálogo General Dinámico) -->
@@ -237,6 +237,12 @@
                         </div>
                     @endforeach
                     
+                </div>
+                <div class="flex justify-center mt-12 group reveal-on-scroll">
+                    <a href="https://wa.me/TUNUMERODEWHATSAPP" target="_blank" class="px-8 py-4 bg-accent-coral text-white rounded-full font-label-sm text-label-sm uppercase font-bold hover:bg-opacity-90 transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 group">
+                            Ver todo el catálogo
+                            <span class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1"><x-si-whatsapp class="w-5 h-5" /></span>
+                        </a>
                 </div>
             </div>
         </section>
