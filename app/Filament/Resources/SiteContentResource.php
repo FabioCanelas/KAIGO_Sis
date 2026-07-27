@@ -23,7 +23,19 @@ class SiteContentResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('section')
+                    ->label('Sección')
+                    ->required()
+                    ->maxLength(50),
+                Forms\Components\TextInput::make('setting_key')
+                    ->label('Clave (Variable)')
+                    ->required()
+                    ->maxLength(100)
+                    ->hidden(),
+                Forms\Components\Textarea::make('setting_value')
+                    ->label('Texto / Valor')
+                    ->rows(5)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -31,7 +43,22 @@ class SiteContentResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('section')
+                    ->label('Sección')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('setting_key')
+                    ->label('Clave')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('setting_value')
+                    ->label('Texto')
+                    ->limit(50)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Última actualización')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -43,7 +70,8 @@ class SiteContentResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultGroup('section');
     }
 
     public static function getRelations(): array
@@ -60,5 +88,15 @@ class SiteContentResource extends Resource
             'create' => Pages\CreateSiteContent::route('/create'),
             'edit' => Pages\EditSiteContent::route('/{record}/edit'),
         ];
+    }
+    // Esto oculta el botón de crear nuevo
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+    // Esto oculta los botones de eliminar para que no rompan la web
+    public static function canDelete(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return false;
     }
 }

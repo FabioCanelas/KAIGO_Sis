@@ -102,3 +102,34 @@ body {
 .owl-layer-beak {
     opacity: 0;
 }
+
+/* Difumina los bordes izq/der del carrusel */
+.carousel-fade-edges {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 4%, black 96%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, black 4%, black 96%, transparent 100%);
+}
+
+.wishlist-btn.is-active .wishlist-icon {
+    color: var(--accent-coral, #ff6b4a);
+    font-variation-settings: 'FILL' 1;
+}
+
+@keyframes pulse-slow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+.animate-pulse-slow { animation: pulse-slow 6s ease-in-out infinite; }
+
+@keyframes ping-slow {
+    0% { transform: scale(1); opacity: 1; }
+    75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+.animate-ping-slow { animation: ping-slow 2.5s cubic-bezier(0,0,.2,1) infinite; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+.animate-float { animation: float 3.5s ease-in-out infinite; }
+
+.tilt-card { transition: transform 0.15s ease-out; transform-style: preserve-3d; will-change: transform; }

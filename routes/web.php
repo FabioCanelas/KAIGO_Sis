@@ -21,6 +21,24 @@ Route::get('/', function () {
         ->latest()
         ->get();
 
+    // Traer las marcas de la base de datos
+    $brands = \App\Models\Brand::all();
+
     // 4. Mandamos las variables a la vista
-    return view('welcome', compact('siteContent', 'featuredProducts', 'allProducts'));
+    return view('welcome', compact('siteContent', 'featuredProducts', 'allProducts', 'brands'));
 })->name('home');
+
+Route::get('/catalogo', function () {
+    $siteContent = SiteContent::all()->pluck('setting_value', 'setting_key')->toArray();
+    
+    // Traer todos los productos para el Catálogo General
+    $allProducts = Product::with(['images', 'category'])
+        ->where('is_active', true)
+        ->latest()
+        ->get();
+
+    // Traer categorías para el Sidebar
+    $categories = \App\Models\Category::withCount('products')->get();
+
+    return view('catalogo', compact('siteContent', 'allProducts', 'categories'));
+})->name('catalogo');
