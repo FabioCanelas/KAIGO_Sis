@@ -28,17 +28,21 @@ Route::get('/', function () {
     return view('welcome', compact('siteContent', 'featuredProducts', 'allProducts', 'brands'));
 })->name('home');
 
-Route::get('/catalogo', function () {
+Route::get('/catalogo', function (\Illuminate\Http\Request $request) {
     $siteContent = SiteContent::all()->pluck('setting_value', 'setting_key')->toArray();
     
-    // Traer todos los productos para el Catálogo General
-    $allProducts = Product::with(['images', 'category'])
-        ->where('is_active', true)
-        ->latest()
-        ->get();
+    $query = Product::with(['images', 'category'])->where('is_active', true);
+    
+    $currentCategory = null;
+    if ($request->has('category')) {
+        $query->where('category_id', $request->query('category'));
+        $currentCategory = \App\Models\Category::find($request->query('category'));
+    }
+
+    $allProducts = $query->latest()->get();
 
     // Traer categorías para el Sidebar
     $categories = \App\Models\Category::withCount('products')->get();
 
-    return view('catalogo', compact('siteContent', 'allProducts', 'categories'));
+    return view('catalogo', compact('siteContent', 'allProducts', 'categories', 'currentCategory'));
 })->name('catalogo');

@@ -61,8 +61,8 @@
     <!-- FOOTER (Acción) -->
     <div class="p-6 border-t border-border-subtle bg-surface/80 backdrop-blur-md shrink-0">
         <button class="w-full bg-primary hover:bg-primary/90 text-white font-label-sm text-label-sm uppercase font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
-            Añadir al Carrito
+            <span class="material-symbols-outlined text-[20px]">phone</span>
+            Contactar
         </button>
     </div>
 </div>

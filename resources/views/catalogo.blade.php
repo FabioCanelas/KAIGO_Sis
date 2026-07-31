@@ -20,7 +20,7 @@
             <nav class="hidden md:flex gap-8">
                 <a class="font-label-sm text-label-sm uppercase text-on-surface hover:text-secondary transition-colors duration-200" href="{{ route('home') }}#inicio">Inicio</a>
                 <a class="font-label-sm text-label-sm uppercase text-on-surface hover:text-secondary transition-colors duration-200" href="{{ route('home') }}#destacados">Destacados</a>
-                <a class="font-label-sm text-label-sm uppercase text-primary font-bold hover:text-secondary transition-colors duration-200" href="{{ route('catalogo') }}">Catálogo</a>
+                <a class="font-label-sm text-label-sm uppercase text-primary font-bold hover:text-secondary transition-colors duration-200" href="{{ route('home') }}#catalogo">Catálogo</a>
                 <a class="font-label-sm text-label-sm uppercase text-on-surface hover:text-secondary transition-colors duration-200" href="{{ route('home') }}#sobre-nosotros">Nosotros</a>
             </nav>
             <div class="flex items-center gap-4">
@@ -38,16 +38,16 @@
                     <h3 class="font-headline-sm text-headline-sm text-primary mb-6 border-b border-border-subtle pb-4">Categorías</h3>
                     <ul class="flex flex-col gap-4">
                         <li>
-                            <a href="#" class="group flex justify-between items-center text-primary font-bold hover:text-accent-coral transition-colors">
+                            <a href="{{ route('catalogo') }}" class="group flex justify-between items-center transition-colors {{ !request()->has('category') ? 'text-primary font-bold' : 'text-text-secondary hover:text-primary' }}">
                                 Todos los productos
-                                <span class="bg-surface-muted group-hover:bg-accent-coral/10 group-hover:text-accent-coral px-3 py-1 rounded-full text-[12px] font-bold transition-colors">{{ $allProducts->count() }}</span>
+                                <span class="{{ !request()->has('category') ? 'bg-accent-coral/10 text-accent-coral font-bold' : 'bg-surface-muted group-hover:bg-surface' }} px-3 py-1 rounded-full text-[12px] transition-colors">{{ \App\Models\Product::where('is_active', true)->count() }}</span>
                             </a>
                         </li>
                         @foreach($categories as $category)
                             <li>
-                                <a href="#" class="group flex justify-between items-center text-text-secondary hover:text-primary transition-colors">
+                                <a href="{{ route('catalogo', ['category' => $category->id]) }}" class="group flex justify-between items-center transition-colors {{ request()->query('category') == $category->id ? 'text-primary font-bold' : 'text-text-secondary hover:text-primary' }}">
                                     {{ $category->name }}
-                                    <span class="bg-surface-muted group-hover:bg-surface px-3 py-1 rounded-full text-[12px] transition-colors">{{ $category->products_count }}</span>
+                                    <span class="{{ request()->query('category') == $category->id ? 'bg-accent-coral/10 text-accent-coral font-bold' : 'bg-surface-muted group-hover:bg-surface' }} px-3 py-1 rounded-full text-[12px] transition-colors">{{ $category->products_count }}</span>
                                 </a>
                             </li>
                         @endforeach
@@ -58,8 +58,8 @@
             <!-- Product Grid -->
             <section class="w-full lg:w-3/4">
                 <div class="flex justify-between items-end mb-8 border-b border-border-subtle pb-4">
-                    <h1 class="font-display-md text-display-md text-primary">Catálogo Completo</h1>
-                    <span class="text-text-secondary font-label-sm text-label-sm uppercase">Mostrando {{ $allProducts->count() }} productos</span>
+                    <h1 class="font-display-md text-display-md text-primary">{{ isset($currentCategory) ? $currentCategory->name : 'Catálogo Completo' }}</h1>
+                    <span class="text-text-secondary font-label-sm text-label-sm uppercase">{{ $allProducts->count() }} productos</span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
@@ -92,83 +92,7 @@
 
         </div>
     </main>
-    <section id="por-que-elegirnos" class="relative z-20 w-full bg-surface py-24 md:py-28">
-    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-
-        <div class="max-w-2xl mb-16">
-            <span class="reveal-on-scroll font-label-sm text-label-sm uppercase text-accent-coral inline-flex items-center gap-2 mb-6 font-bold tracking-widest">
-                <span class="w-1 h-1 bg-accent-coral animate-ping-slow"></span>
-                Por qué elegirnos
-            </span>
-            <h1 class="reveal-on-scroll font-semibold text-display-lg-mobile md:text-display-lg text-primary mb-6">
-                Comprar con nosotros es <span class="text-accent-coral">tranquilidad</span>
-            </h1>
-            <p class="reveal-on-scroll font-body-lg text-body-lg text-text-secondary">
-                Cuatro razones por las que miles de clientes confían en nuestra tienda.
-            </p>
-        </div>
-
-        <!-- Franja de beneficios con divisores -->
-        <div class="grid grid-cols-2 md:grid-cols-4 border-t border-border-subtle">
-
-            @php
-                $benefits = [
-                    [
-                        'icon' => 'local_shipping',
-                        'title' => 'Envíos a todo el país',
-                        'text' => 'Recibe tu pedido estés donde estés, con seguimiento en tiempo real.',
-                    ],
-                    [
-                        'icon' => 'verified_user',
-                        'title' => 'Garantía oficial',
-                        'text' => 'Hasta 12 meses de garantía respaldada directamente por la marca.',
-                    ],
-                    [
-                        'icon' => 'credit_card',
-                        'title' => 'Pagos seguros',
-                        'text' => 'Paga en cuotas o al contado, con toda la protección de tus datos.',
-                    ],
-                    [
-                        'icon' => 'support_agent',
-                        'title' => 'Soporte especializado',
-                        'text' => 'Técnicos certificados listos para ayudarte antes y después de tu compra.',
-                    ],
-                ];
-            @endphp
-
-            @foreach ($benefits as $index => $benefit)
-                <div class="benefit-card reveal-on-scroll group relative border-b border-r border-border-subtle {{ $index == 0 || $index == 2 ? '' : '' }} p-8 md:p-10 flex flex-col items-start gap-6 overflow-hidden transition-colors duration-500"
-                     style="transition-delay: {{ $index * 100 }}ms;">
-
-                    <!-- Numero de fondo -->
-                    <span class="absolute -top-2 right-4 font-semibold text-6xl text-text-secondary/5 select-none transition-colors duration-500 group-hover:text-accent-coral/10">
-                        {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
-                    </span>
-
-                    <div class="w-14 h-14 rounded-2xl bg-surface-muted flex items-center justify-center transition-all duration-500 group-hover:bg-accent-coral group-hover:-rotate-6 group-hover:scale-110">
-                        <span class="material-symbols-outlined text-[26px] text-primary transition-colors duration-500 group-hover:text-white">
-                            {{ $benefit['icon'] }}
-                        </span>
-                    </div>
-
-                    <div class="relative z-10">
-                        <h3 class="text-lg md:text-xl font-semibold text-primary mb-2">
-                            {{ $benefit['title'] }}
-                        </h3>
-                        <p class="font-body-sm text-body-sm text-text-secondary leading-relaxed">
-                            {{ $benefit['text'] }}
-                        </p>
-                    </div>
-
-                    <!-- Linea inferior que se dibuja al hover -->
-                    <span class="absolute bottom-0 left-0 h-[2px] bg-accent-coral w-0 group-hover:w-full transition-all duration-500"></span>
-                </div>
-            @endforeach
-
-        </div>
-    </div>
-</section>
-
+    
     <!-- Footer Simple -->
     <footer class="bg-neutral-100 relative z-30 w-full pt-16 pb-8 md:pt-24 border-t border-border-subtle rounded-t-[3rem] md:rounded-t-[4rem]"> 
         <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex flex-col h-full">

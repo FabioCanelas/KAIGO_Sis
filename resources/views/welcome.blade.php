@@ -7,15 +7,14 @@
     <meta name="description" content="KIVO - Catálogo interactivo de productos tecnológicos premium y accesorios.">
     <title>KIVO | Catálogo Web Artículos Tecnólogicos</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 
     <!-- Icono del sitio (Favicon) -->
     <link rel="icon" type="image/x-icon" href="{{ asset('images/white-l.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/white-l.png') }}">
-
-    <!-- Motor 3D -->
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -41,61 +40,128 @@
     </header>
     <main id="inicio" class="relative w-full">
     <!-- Hero Section -->
-    <section class="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center justify-center bg-surface pt-10 pb-20 overflow-hidden hero">
+    <style>
+        /* CSS puro para garantizar el diseño móvil sin depender de clases Tailwind no compiladas */
+        @media (max-width: 767px) {
+            .desktop-only-hero { display: none !important; }
+            .mobile-only-hero { display: flex !important; }
+            .hero-main-section { padding-bottom: 2rem !important; min-height: calc(100vh - 80px) !important; padding-top: 0 !important; }                                                                                                                                                                                                                                                                                                                                        .hero-main-container { flex-direction: column !important; justify-content: flex-start !important; padding-top: 2vh !important; height: calc(100vh - 100px) !important; padding-bottom: 0 !important; gap: 1.5rem !important; }
+            .hero-owl-container { flex: none !important; margin: 0 !important; max-height: 40vh !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+            .hero-owl-inner { height: 100% !important; max-height: 40vh !important; }
+        }
+        @media (min-width: 768px) {
+            .mobile-only-hero { display: none !important; }
+        }
+        @media (min-width: 768px) {
+            .mobile-only-hero { display: none !important; }
+        }
+
+        /* 3D Flip Card CSS (Exactamente como en tu PoC) */
+        .scene {
+            perspective: 1000px;
+        }
+
+        .card-3d {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .scene:hover .card-3d {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-face-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+
+    <section class="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center justify-center bg-surface pt-10 pb-10 overflow-hidden hero hero-main-section">
         <!-- Huge Background Text -->
-        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0 leading-none select-none overflow-hidden opacity-90 hero-title">
+        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0 leading-none select-none overflow-hidden opacity-90 hero-title desktop-only-hero">
             <h1 class="text-[22vw] md:text-[18vw] font-black tracking-tighter text-primary whitespace-nowrap m-0 p-0 leading-[0.85]">KIVO</h1>
             <h1 class="text-[22vw] md:text-[18vw] font-black tracking-tighter text-primary whitespace-nowrap m-0 p-0 leading-[0.85]">CATÁLOGO</h1>
         </div>
 
         <!-- Center content: The Owl and side elements -->
-            <div class="relative z-10 w-full max-w-container-max mx-auto flex flex-col md:flex-row items-center justify-between px-margin-mobile md:px-margin-desktop h-full mt-8 md:mt-0">
-                <!-- Left Text -->
-                <div class="w-full md:w-1/3 flex flex-col items-center md:items-start text-center md:text-left mb-12 md:mb-0 reveal-on-scroll hero-copy">
-                    <div class="bg-surface/80 backdrop-blur-md p-6 rounded-1xl border border-border-subtle natural-shadow">
-                        <span class="font-label-sm text-label-sm uppercase text-accent-coral block mb-3 font-bold tracking-widest">
-                            {{ $siteContent['home_left_title'] ?? 'NUESTRO OBJETIVO' }}
-                        </span>
-                        <p class="font-body-md text-body-md text-primary font-medium max-w-xs">
-                            {{ $siteContent['home_left_text'] ?? 'Ser los N°1 en este ámbito ganándonos la confianza de nuestros clientes mediante un servicio de calidad y productos premium.' }}
-                        </p>
-                    </div>
+        <div class="relative z-10 w-full max-w-container-max mx-auto flex flex-col md:flex-row items-center justify-between px-margin-mobile md:px-margin-desktop h-full mt-8 md:mt-0 hero-main-container">
+            
+            <!-- Left Text -->
+            <div class="w-full md:w-1/3 flex flex-col items-center md:items-start text-center md:text-left mb-12 md:mb-0 reveal-on-scroll hero-copy desktop-only-hero">
+                <div class="bg-surface/80 backdrop-blur-md p-6 rounded-1xl border border-border-subtle natural-shadow">
+                    <span class="font-label-sm text-label-sm uppercase text-accent-coral block mb-3 font-bold tracking-widest">
+                        {{ $siteContent['home_left_title'] ?? 'NUESTRO OBJETIVO' }}
+                    </span>
+                    <p class="font-body-md text-body-md text-primary font-medium max-w-xs">
+                        {{ $siteContent['home_left_text'] ?? 'Ser los N°1 en este ámbito ganándonos la confianza de nuestros clientes mediante un servicio de calidad y productos premium.' }}
+                    </p>
                 </div>
+            </div>
 
-                <!-- The Owl -->
-                <div class=" w-full md:w-1/3 flex justify-center reveal-on-scroll relative z-20" style="transition-delay: 100ms;">
-                    <div class="relative flex items-center justify-center w-full h-[400px] md:h-[500px]">
-                        <div class="owl-stage scale-110 md:scale-125" aria-hidden="true" data-owl-stage>
-                            <div class="owl-aura" style="background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 60%);"></div>
-                            <div class="owl-shadow"></div>
-                            <div class="owl-rig" data-owl-rig>
-                                <img class="owl-layer owl-layer-base" src="{{ asset('images/KivoCara-cutout.webp') }}" alt="" data-depth="2" draggable="false" />
-                                <img class="owl-layer owl-layer-head" src="{{ asset('images/KivoCara-cutout.webp') }}" alt="" data-depth="2.10" draggable="false" />
-                                <img class="owl-layer owl-layer-eyes" src="{{ asset('images/KivoCara-cutout.webp') }}" alt="" data-depth="2.18" draggable="false" />
-                                <img class="owl-layer owl-layer-beak" src="{{ asset('images/KivoCara-cutout.webp') }}" alt="" data-depth="2.24" draggable="false" />
-                            </div>
+            <!-- The Owl -->
+            <div class="w-full md:w-1/3 flex justify-center items-center reveal-on-scroll relative z-20 hero-owl-container" style="transition-delay: 100ms;">
+                <div class="relative flex items-center justify-center w-full h-[400px] md:h-[500px] hero-owl-inner">
+                    <div class="owl-stage scale-110 md:scale-125" aria-hidden="true" data-owl-stage>
+                        <div class="owl-aura" style="background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 60%);"></div>
+                        <div class="owl-shadow"></div>
+                        <div class="owl-rig" data-owl-rig>
+                            <img class="owl-layer owl-layer-base" src="{{ asset('images/KivoCara-cutout.webp') }}" alt="" width="1000" height="1000" data-depth="2" draggable="false" fetchpriority="high" loading="eager" />
+                            <img class="owl-layer owl-layer-head" src="{{ asset('images/KivoCara-cutout.webp') }}" alt="" width="1000" height="1000" data-depth="2.10" draggable="false" loading="lazy" />
+                            <img class="owl-layer owl-layer-eyes" src="{{ asset('images/KivoCara-cutout.webp') }}" alt="" width="1000" height="1000" data-depth="2.18" draggable="false" loading="lazy" />
+                            <img class="owl-layer owl-layer-beak" src="{{ asset('images/KivoCara-cutout.webp') }}" alt="" width="1000" height="1000" data-depth="2.24" draggable="false" loading="lazy" />
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Right text -->
-                <div class="w-full md:w-1/3 flex flex-col items-center md:items-start text-center md:text-left mb-12 md:mb-0 reveal-on-scroll hero-copy">
-                    <div class="bg-surface/80 backdrop-blur-md p-6 rounded-1xl border border-border-subtle natural-shadow">
-                        <span class="font-label-sm text-label-sm uppercase text-accent-coral block mb-3 font-bold tracking-widest">
-                            {{ $siteContent['home_right_title'] ?? 'KIVO' }}
-                        </span>
-                        <p class="font-body-md text-body-md text-primary font-medium max-w-xs">
-                            {{ $siteContent['home_right_text'] ?? 'Somos un equipo de emprendedores que buscan ofrecerte y traerte lo mejor en productos tecnológicos.' }}
-                        </p>
-                    </div>
+            <!-- Right text -->
+            <div class="w-full md:w-1/3 flex flex-col items-center md:items-start text-center md:text-left mb-12 md:mb-0 reveal-on-scroll hero-copy desktop-only-hero">
+                <div class="bg-surface/80 backdrop-blur-md p-6 rounded-1xl border border-border-subtle natural-shadow">
+                    <span class="font-label-sm text-label-sm uppercase text-accent-coral block mb-3 font-bold tracking-widest">
+                        {{ $siteContent['home_right_title'] ?? 'KIVO' }}
+                    </span>
+                    <p class="font-body-md text-body-md text-primary font-medium max-w-xs">
+                        {{ $siteContent['home_right_text'] ?? 'Somos un equipo de emprendedores que buscan ofrecerte y traerte lo mejor en productos tecnológicos.' }}
+                    </p>
                 </div>
             </div>
-            <div class="w-full flex justify-center reveal-on-scroll hero-cta pointer-events-auto" style="transition-delay: 200ms;">
-                <a href="/catalogo" class="px-8 py-4 bg-surface/80 backdrop-blur-md text-primary rounded-2xl font-label-sm text-label-sm uppercase font-bold hover:bg-white transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 inline-flex items-center gap-3 border border-border-subtle group natural-shadow">
-                    Ver Catálogo 
-                    <span class="material-symbols-outlined text-[20px] group-hover:text-accent-coral group-hover:translate-x-1 transition-all">arrow_forward</span>
+
+            <!-- MOBILE Typography & CTA (MOBILE ONLY) -->
+            <div class="w-full flex-col justify-end relative z-30 pb-0 mobile-only-hero" style="gap: 1rem;">
+                <h1 class="font-black text-[22vw] leading-[0.85] text-primary tracking-tighter uppercase text-left m-0 p-0">
+                    KIVO<br>CATA<br>LOGO
+                </h1>
+                <p class="text-[10px] font-bold text-text-secondary uppercase tracking-widest text-left max-w-[280px] m-0">
+                    {{ $siteContent['home_left_title'] ?? 'NUESTRO OBJETIVO' }}<br>
+                    Somos un equipo de emprendedores que buscan ofrecerte lo mejor en productos tecnológicos.
+                </p>
+                <a href="/catalogo" class="w-fit px-6 py-3 border-[2px] border-border-subtle text-primary rounded-full font-bold uppercase tracking-widest text-[12px] flex items-center gap-2 transition-colors active:bg-primary active:text-white">
+                    Ver Catálogo
+                    <span class="material-symbols-outlined text-[16px]">arrow_outward</span>
                 </a>
             </div>
+
+        </div>
+
+        <div class="w-full flex justify-center reveal-on-scroll hero-cta pointer-events-auto desktop-only-hero" style="transition-delay: 200ms;">
+            <a href="/catalogo" class="px-8 py-4 bg-surface/80 backdrop-blur-md text-primary rounded-2xl font-label-sm text-label-sm uppercase font-bold hover:bg-white transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 inline-flex items-center gap-3 border border-border-subtle group natural-shadow">
+                Ver Catálogo 
+                <span class="material-symbols-outlined text-[20px] group-hover:text-accent-coral group-hover:translate-x-1 transition-all">arrow_forward</span>
+            </a>
+        </div>
     </section>
 
     <!-- Navigation Drawer (Overlay) -->
@@ -106,7 +172,7 @@
                 <button class="material-symbols-outlined" id="close-drawer">close</button>
             </div>
             <ul class="space-y-8">
-                <li><a class="flex items-center gap-4 text-on-surface-variant font-body-lg text-body-lg hover:pl-2 transition-all duration-300" href="#"><span class="material-symbols-outlined" data-icon="storefront">storefront</span>Ver todo el catálogo</a></li>
+                <li><a class="flex items-center gap-4 text-on-surface-variant font-body-lg text-body-lg hover:pl-2 transition-all duration-300" href="{{ route('catalogo') }}"><span class="material-symbols-outlined" data-icon="storefront">storefront</span>Ver todo el catálogo</a></li>
                 <li><a class="flex items-center gap-4 text-on-surface-variant font-body-lg text-body-lg hover:pl-2 transition-all duration-300" href="#"><span class="material-symbols-outlined" data-icon="new_releases">new_releases</span>Productos Nuevos</a></li>
                 <li><a class="flex items-center gap-4 text-on-surface-variant font-body-lg text-body-lg hover:pl-2 transition-all duration-300" href="#"><span class="material-symbols-outlined" data-icon="local_offer">local_offer</span>Productos en Oferta</a></li>
             </ul>
@@ -126,7 +192,7 @@
                         Vitrina Premium
                     </span>
                     <h2 class="texto-emergente reveal-on-scroll font-semibold text-display-lg-mobile md:text-display-lg text-primary">
-                        Interactúa con el Futuro
+                        Interactúa con nuestros <span class="text-accent-coral">dispositivos</span>
                     </h2>
                     <p class="texto-emergente reveal-on-scroll font-body-lg text-body-lg text-text-secondary max-w-xl mx-auto mt-4">
                         Toca, gira y explora nuestros modelos más exclusivos en 3D.
@@ -176,6 +242,8 @@
                             shadow-intensity="1.5" 
                             exposure="1.2"
                             environment-image="neutral"
+                            loading="lazy"
+                            poster="https://placehold.co/600x600/f8f9fa/1d1d1f?text=Cargando+Modelo+3D..."
                             class="w-full h-full">
                         </model-viewer>
                         
@@ -225,7 +293,7 @@
         <section id="destacados" class="relative z-20 w-full flex flex-col justify-center bg-surface mt-30 mb-30 pt-10 pb-10">
             <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop w-full">
 
-                <div class="max-w-4xl mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                <div class="w-full mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
                     <div>
                         <span class="reveal-on-scroll font-label-sm text-label-sm uppercase text-accent-coral inline-flex items-center gap-2 mb-6 font-bold tracking-widest">
                             <span class="w-1 h-1 bg-accent-coral animate-ping-slow"></span>
@@ -238,10 +306,11 @@
                             Una colección de productos innovadores, seleccionados para quienes conocen de tecnología y buscan lo mejor.
                         </p>
                     </div>
-                    <span class="reveal-on-scroll hidden md:inline-flex font-label-sm text-label-sm text-text-secondary items-center gap-2 shrink-0 mb-2">
-                        <span class="text-primary font-bold">{{ str_pad($featuredProducts->count(), 2, '0', STR_PAD_LEFT) }}</span>
-                        productos seleccionados
-                    </span>
+                    <div class="flex items-end pb-2">
+                        <span class="reveal-on-scroll inline-flex items-center gap-2 text-sm text-gray-500 font-medium animate-pulse">
+                            Desliza para ver más <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                        </span>
+                    </div>
                 </div>
 
             </div> <!-- Cierra el contenedor del texto -->
@@ -249,45 +318,45 @@
             <!-- CARRUSEL HORIZONTAL PARA PRODUCTOS DESTACADOS -->
             <div class="w-full relative max-w-container-max mx-auto group/carousel">
                 <div id="destacados-slider"
-                    class="flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory gap-6 md:gap-2 px-margin-mobile md:px-margin-desktop w-full carousel-fade-edges pb-8"
+                    class="flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory gap-6 md:gap-2 px-margin-mobile md:px-margin-desktop w-full pt-8 pb-12"
                             style="scrollbar-width: none; -ms-overflow-style: none;">
 
                             @foreach($featuredProducts as $index => $product)
                                 <div class="shrink-0 w-[75vw] sm:w-[280px] md:w-[320px] snap-center md:snap-start group cursor-pointer reveal-on-scroll" style="transition-delay: {{ $index * 100 }}ms;">
 
-                                    <div class="relative aspect-square w-full overflow-hidden rounded-3xl bg-surface-muted transition-all duration-500 natural-shadow group-hover:shadow-2xl group-hover:-translate-y-2">
+                                    <div class="scene w-full group" style="aspect-ratio: 3/4;">
+                                        <div class="card-3d">
+                                            
+                                            <!-- Frente -->
+                                            <div class="card-face bg-white flex flex-col">
+                                                <div class="w-full relative" style="height: 75%;">
+                                                    <span class="absolute top-4 left-4 text-white text-xs font-bold px-3 py-1 rounded-full z-10" style="background-color: #000;">Destacado</span>
+                                                    <!-- La imagen ahora cubre todo el espacio sin padding -->
+                                                    <img loading="lazy" decoding="async" class="absolute inset-0 object-cover w-full h-full"
+                                                        src="{{ $product->images->first() ? asset('storage/' . $product->images->first()->image_path) : 'https://placehold.co/600x600/eeeeed/666666?text=Sin+Imagen' }}"
+                                                        alt="{{ $product->name }}" />
+                                                </div>
+                                                <div class="p-4 flex flex-col justify-center bg-white" style="height: 25%;">
+                                                    <h3 class="text-lg font-bold text-gray-900 truncate">{{ $product->name }}</h3>
+                                                    <p class="text-sm text-gray-500 truncate">{{ $product->category ? $product->category->name : 'General' }} - Bs {{ number_format($product->price, 2) }}</p>
+                                                </div>
+                                            </div>
 
-                                        <img loading="lazy" class="absolute inset-0 object-contain p-8 w-full h-full transition-transform duration-700 group-hover:scale-110 bg-white"
-                                            src="{{ $product->images->first() ? asset('storage/' . $product->images->first()->image_path) : 'https://placehold.co/600x600/eeeeed/666666?text=Sin+Imagen' }}"
-                                            alt="{{ $product->name }}" />
-
-                                        <!-- Badge Destacado -->
-                                        <div class="absolute top-5 left-5 bg-accent-coral text-white font-label-sm text-[11px] px-3 py-1.5 rounded-md uppercase tracking-wider shadow-md inline-flex items-center gap-1">
-                                            <span class="material-symbols-outlined transform scale-75">favorite</span>
-                                            Destacado
+                                            <!-- Atrás -->
+                                            <div class="card-face card-face-back text-white p-6 flex flex-col justify-between" style="background-color: #12151e;">
+                                                <div>
+                                                    <h3 class="text-xl font-bold mb-4">{{ $product->name }}</h3>
+                                                    <div class="text-sm text-gray-300 leading-relaxed border-t pt-4" style="border-color: #2a3040;">
+                                                        {!! nl2br(e(Str::limit($product->description, 120))) !!}
+                                                    </div>
+                                                </div>
+                                                
+                                                <button class="open-quick-view w-full bg-white text-black font-bold py-2 rounded-lg hover:bg-gray-100 transition-colors" data-product="{{ json_encode($product) }}">
+                                                    Ver más
+                                                </button>
+                                            </div>
+                                            
                                         </div>
-
-                                        <!-- Overlay Vista rápida -->
-                                        <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 flex justify-center">
-                                            <button class="open-quick-view bg-white/95 backdrop-blur-md px-4 py-2 rounded-full font-label-sm text-label-sm font-bold text-primary inline-flex items-center gap-2 shadow-lg hover:bg-primary hover:text-white transition-colors" data-product="{{ json_encode($product) }}">
-                                                <span class="material-symbols-outlined text-[16px]">visibility</span>
-                                                Vista rápida
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-6 flex justify-between items-start px-2">
-                                        <div>
-                                            <h3 class="text-xl font-semibold text-primary group-hover:text-accent-coral transition-colors duration-300">{{ $product->name }}</h3>
-                                            <span class="inline-block font-label-sm text-[11px] text-text-secondary uppercase mt-2 bg-surface-muted px-3 py-1 rounded-full">
-                                                {{ $product->category ? $product->category->name : 'General' }}
-                                            </span>
-                                        </div>
-                                        <!-- Precio -->
-                                        <div class="bg-white/70 backdrop-blur-md px-4 py-2 rounded-sm shadow-lg font-label-sm font-bold text-neutral-500 flex items-center justify-center">
-                                            ${{ number_format($product->price, 2) }}
-                                        </div>
-                                    
                                     </div>
                                 </div>
                             @endforeach
@@ -297,8 +366,7 @@
             </section>
 
         <!-- Sección Invitación al Catálogo -->
-        <section id="invitacion-catalogo" class="relative w-full bg-surface mt-30 pb-30 overflow-hidden">
-
+        <section id="catalogo" class="relative w-full bg-surface mt-30 pb-30 overflow-hidden">
             <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center relative">
 
                 <span class="reveal-on-scroll font-label-sm text-label-sm uppercase text-accent-coral inline-flex items-center gap-2 mb-6 font-bold tracking-widest">
@@ -355,7 +423,7 @@
                     <!-- Botón flotante, superpuesto entre el grid y el texto -->
                     <div class="absolute left-0 w-full -bottom-9 flex justify-center z-20 pointer-events-none">
                         <div class="pointer-events-auto">
-                            <a href="#catalogo" class="px-9 py-4 bg-surface/90 backdrop-blur-md text-primary rounded-2xl font-label-sm text-label-sm uppercase font-bold hover:bg-white transition-all duration-300 shadow-2xl hover:shadow-accent-coral/20 transform hover:-translate-y-1 inline-flex items-center gap-3 border border-border-subtle group natural-shadow animate-float">
+                            <a href="{{ route('catalogo') }}" class="px-9 py-4 bg-surface/90 backdrop-blur-md text-primary rounded-2xl font-label-sm text-label-sm uppercase font-bold hover:bg-white transition-all duration-300 shadow-2xl hover:shadow-accent-coral/20 transform hover:-translate-y-1 inline-flex items-center gap-3 border border-border-subtle group natural-shadow animate-float">
                                 Ver Catálogo
                                 <span class="material-symbols-outlined text-[20px] group-hover:text-accent-coral group-hover:translate-x-1 transition-all">arrow_forward</span>
                             </a>
@@ -365,6 +433,7 @@
             </div>
         </section>
 
+        <!-- Carrusel Marcas -->
         <section id="marcas-aliadas" class="relative z-20 w-full bg-surface py-12 md:py-14 overflow-hidden">
             <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center mb-12">
                 <span class="reveal-on-scroll font-label-sm text-label-sm uppercase text-accent-coral inline-flex items-center gap-2 mb-4 font-bold tracking-widest justify-center">
@@ -469,6 +538,7 @@
                 <div class="cursor-pointer w-full aspect-[16/9] md:aspect-[32/9] rounded-2xl overflow-hidden natural-shadow group mt-16">
                     <img loading="lazy" class="object-cover w-full h-full transition-transform duration-1000 group-hover:scale-105" 
                         src="{{ asset('images//imgAbout.png') }}" 
+                        width="1920" height="540"
                         alt="Equipo Kivo" />
                 </div>
             </div>
@@ -595,7 +665,7 @@
                     <p class="font-body-md text-body-md text-text-secondary mb-6">
                         Explora nuestro catálogo y descubre cómo la tecnología puede transformar tu día a día.
                     </p>
-                    <a href="#catalogo" class="px-8 py-4 bg-surface/80 backdrop-blur-md text-primary rounded-2xl font-label-sm text-label-sm uppercase font-bold hover:bg-white transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 inline-flex items-center gap-3 border border-border-subtle group natural-shadow">
+                    <a href="{{ route('catalogo') }}" class="px-8 py-4 bg-surface/80 backdrop-blur-md text-primary rounded-2xl font-label-sm text-label-sm uppercase font-bold hover:bg-white transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 inline-flex items-center gap-3 border border-border-subtle group natural-shadow">
                         Ver Catálogo 
                         <span class="material-symbols-outlined text-[20px] group-hover:text-accent-coral group-hover:translate-x-1 transition-all">arrow_forward</span>
                     </a>
@@ -624,14 +694,10 @@
 
     </main> <!-- Fin stacking-container -->
     
-    <!-- BottomNavBar (Mobile Only) -->
-    <nav class="md:hidden fixed bottom-0 w-full h-16 bg-surface border-t border-border-subtle flex justify-around items-center z-40 shadow-sm px-4">
-        <button class="flex flex-col items-center text-primary"><span class="material-symbols-outlined" data-icon="bolt">bolt</span><span class="text-[10px] uppercase font-bold">New</span></button>
-        <button class="flex flex-col items-center text-outline"><span class="material-symbols-outlined" data-icon="bar_chart_4_bars">bar_chart_4_bars</span><span class="text-[10px] uppercase">Charts</span></button>
-        <button class="flex flex-col items-center text-outline"><span class="material-symbols-outlined" data-icon="search">search</span><span class="text-[10px] uppercase">Search</span></button>
-        <button class="flex flex-col items-center text-outline"><span class="material-symbols-outlined" data-icon="person">person</span><span class="text-[10px] uppercase">Account</span></button>
-    </nav>
 
     @include('components.quick-view-drawer')
 
-</body></html>
+    <!-- Motor 3D (Carga diferida) -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+</body>
+</html>
