@@ -27,10 +27,11 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName('KIVO')
+            ->brandName('KAIGO')
             ->brandLogo(asset('images/black-lt.png'))
             ->darkModeBrandLogo(asset('images/white-lt.png'))
-            ->brandLogoHeight('2rem')
+            ->brandLogoHeight('2.2rem')
+            ->sidebarCollapsibleOnDesktop()
             ->favicon(asset('images/white-l.png'))
             ->login()
             ->colors([
@@ -42,6 +43,9 @@ class AdminPanelProvider extends PanelProvider
                 Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->plugins([
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
+            ])
             
             ->middleware([
                 EncryptCookies::class,
@@ -59,3 +63,4 @@ class AdminPanelProvider extends PanelProvider
             ]);
     }
 }
+

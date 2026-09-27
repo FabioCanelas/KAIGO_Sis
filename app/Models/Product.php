@@ -10,8 +10,8 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'category_id', 'brand_id', 'name', 'slug', 'description', 
-        'price', 'stock', 'is_active', 'is_featured'
+        'code', 'category_id', 'brand_id', 'name', 'slug', 'description', 
+        'average_cost', 'price', 'stock', 'min_stock', 'is_active', 'is_featured'
     ];
 
     // Le decimos a Laravel: "Un Producto PERTENECE A una Categoría"

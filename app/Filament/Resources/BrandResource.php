@@ -17,6 +17,11 @@ class BrandResource extends Resource
 {
     protected static ?string $model = Brand::class;
 
+    protected static ?string $modelLabel = 'Marca';
+    protected static ?string $pluralModelLabel = 'Marcas';
+    protected static ?string $navigationLabel = 'Marcas';
+
+
     protected static ?string $navigationIcon = 'heroicon-o-tag';
 
     public static function form(Form $form): Form

@@ -17,6 +17,11 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
+    protected static ?string $modelLabel = 'Producto';
+    protected static ?string $pluralModelLabel = 'Productos';
+    protected static ?string $navigationLabel = 'Productos';
+
+
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
     public static function form(Form $form): Form
@@ -27,7 +32,20 @@ class ProductResource extends Resource
                     ->relationship('category', 'name')
                     ->label('Categoría')
                     ->searchable()
-                    ->required(),
+                    ->preload()
+                    ->required()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (string $operation, $state, Forms\Set $set, Forms\Get $get) {
+                        if ($operation === 'create' && !empty($state)) {
+                            $category = \App\Models\Category::find($state);
+                            if ($category) {
+                                $prefix = strtoupper(substr($category->name, 0, 3));
+                                $count = \App\Models\Product::where('code', 'like', $prefix . '-%')->count();
+                                $nextNumber = str_pad($count + 1, 4, '0', STR_PAD_LEFT);
+                                $set('code', $prefix . '-' . $nextNumber);
+                            }
+                        }
+                    }),
                 Forms\Components\Select::make('brand_id')
                     ->relationship('brand', 'name')
                     ->label('Marca')
@@ -38,9 +56,17 @@ class ProductResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', \Illuminate\Support\Str::slug($state)) : null),
+                    ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                        if ($operation === 'create' && !empty($state)) {
+                            $set('slug', \Illuminate\Support\Str::slug($state));
+                        }
+                    }),
                 Forms\Components\Hidden::make('slug')
                     ->required()
+                    ->unique(ignoreRecord: true),
+                Forms\Components\TextInput::make('code')
+                    ->label('Código (SKU)')
+                    ->maxLength(255)
                     ->unique(ignoreRecord: true),
                 Forms\Components\TextInput::make('price')
                     ->label('Precio')
@@ -48,8 +74,12 @@ class ProductResource extends Resource
                     ->prefix('$')
                     ->required(),
                 Forms\Components\TextInput::make('stock')
-                    ->label('Inventario (Stock)')
                     ->numeric()
+                    ->required(),
+                Forms\Components\TextInput::make('min_stock')
+                    ->label('Stock Mínimo')
+                    ->numeric()
+                    ->default(3)
                     ->required(),
                 Forms\Components\Textarea::make('description')
                     ->label('Descripción')
@@ -70,7 +100,7 @@ class ProductResource extends Resource
                             ->required(),
                             
                         Forms\Components\Toggle::make('is_primary')
-                            ->label('¿Es la imagen principal del producto?')
+                            ->label('Â¿Es la imagen principal del producto?')
                             ->default(false),
                     ])
                     ->addActionLabel('Agregar otra imagen') // El texto del botón para sumar más fotos
@@ -83,6 +113,15 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('images.image_path')
+                    ->label('Foto')
+                    ->limit(1)
+                    ->circular(),
+                Tables\Columns\TextColumn::make('code')
+                    ->label('Código')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable()
@@ -90,29 +129,45 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('category.name')
                     ->label('Categoría')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('brand.name')
                     ->label('Marca')
                     ->searchable() 
                     ->sortable()
-                    ->default('Sin Marca'), 
+                    ->default('Sin Marca')
+                    ->toggleable(isToggledHiddenByDefault: true), 
+                Tables\Columns\TextColumn::make('average_cost')
+                    ->label('Costo')
+                    ->money('USD')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Precio')
                     ->money('USD')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock')
+                    
                     ->label('Stock')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->color(fn ($record) => $record->stock <= $record->min_stock ? 'danger' : null)
+                    ->weight(fn ($record) => $record->stock <= $record->min_stock ? 'bold' : null),
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Activo')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('is_featured')
                     ->label('Destacado')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('category_id')
+                    ->relationship('category', 'name')
+                    ->label('Filtrar por Categoría')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\Action::make('add_stock')

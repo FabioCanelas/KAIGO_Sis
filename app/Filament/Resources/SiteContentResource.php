@@ -17,6 +17,11 @@ class SiteContentResource extends Resource
 {
     protected static ?string $model = SiteContent::class;
 
+    protected static ?string $modelLabel = 'Contenido';
+    protected static ?string $pluralModelLabel = 'Contenidos';
+    protected static ?string $navigationLabel = 'Sitio Web';
+
+
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
 
     public static function form(Form $form): Form
@@ -55,7 +60,7 @@ class SiteContentResource extends Resource
                     ->limit(50)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Última actualización')
+                    ->label('Ãltima actualización')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

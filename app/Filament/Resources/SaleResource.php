@@ -20,8 +20,12 @@ class SaleResource extends Resource
 {
     protected static ?string $model = Sale::class;
 
+    protected static ?string $modelLabel = 'Venta';
+    protected static ?string $pluralModelLabel = 'Ventas';
+    protected static ?string $navigationLabel = 'Punto de Venta';
+
+
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
-    protected static ?string $navigationLabel = 'Point of sale';
 
 
     public static function form(Form $form): Form
@@ -44,6 +48,13 @@ class SaleResource extends Resource
                             ->required(),
                             
                         // Este campo es "invisible", solo sirve para guardar el total en la base de datos
+                        
+                        Forms\Components\TextInput::make('discount')
+                            ->label('Descuento Global ($)')
+                            ->numeric()
+                            ->default(0)
+                            ->live(onBlur: true),
+
                         Forms\Components\Hidden::make('total_amount')->default(0),
 
                         // Este campo es visual, calcula el total en tiempo real sumando los items
@@ -54,13 +65,19 @@ class SaleResource extends Resource
                                 $items = $get('items') ?? [];
                                 
                                 foreach ($items as $item) {
-                                    $total += floatval($item['price'] ?? 0) * intval($item['quantity'] ?? 0);
+                                    $subtotal = floatval($item['price'] ?? 0) * intval($item['quantity'] ?? 0);
+                                    $itemDiscount = floatval($item['discount'] ?? 0);
+                                    $total += ($subtotal - $itemDiscount);
                                 }
+
+                                $globalDiscount = floatval($get('discount') ?? 0);
+                                $total -= $globalDiscount;
+                                $total = max(0, $total);
                                 
                                 $set('total_amount', $total); // Guarda el total real
                                 return '$ ' . number_format($total, 2) . ' USD'; // Muestra el total bonito
                             }),
-                    ])->columns(3),
+                    ])->columns(4),
 
                 Forms\Components\Section::make('Productos (Carrito)')
                     ->schema([
@@ -72,7 +89,9 @@ class SaleResource extends Resource
                                 Forms\Components\Select::make('product_id')
                                     ->label('Producto')
                                     ->relationship('product', 'name')
-                                    ->searchable()
+                                    ->getOptionLabelFromRecordUsing(fn (\App\Models\Product $record) => $record->code ? "{$record->code} - {$record->name}" : $record->name)
+                                    ->searchable(['name', 'code'])
+                                    ->preload()
                                     ->required()
                                     ->disableOptionsWhenSelectedInSiblingRepeaterItems() // No deja elegir el mismo producto dos veces
                                     ->live(onBlur: false)
@@ -96,9 +115,17 @@ class SaleResource extends Resource
                                     ->default(1)
                                     ->minValue(1)
                                     ->required()
-                                    ->live(), // Actualiza el total cuando cambias la cantidad
+                                    ->live(),
+
+                                Forms\Components\TextInput::make('discount')
+                                    ->label('Descuento ($)')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->minValue(0)
+                                    ->live(onBlur: true),
+
                             ])
-                            ->columns(3)
+                            ->columns(4)
                             ->live() // Hace que el carrito sea dinámico en tiempo real
                     ]),
 
@@ -109,12 +136,22 @@ class SaleResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Fecha')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('Total')
+                    ->money('USD')
+                    ->sortable()
+                    ->summarize(Tables\Columns\Summarizers\Sum::make()->money('USD')->label('Total')),
+                Tables\Columns\TextColumn::make('discount')
+                    ->label('Desc. Global')
                     ->money('USD')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer_name')
                     ->label('Cliente')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label('Método de Pago')
@@ -123,7 +160,40 @@ class SaleResource extends Resource
                     ->formatStateUsing(fn ($state) => $state === 'cash' ? 'Efectivo' : 'QR'),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        \Filament\Forms\Components\DatePicker::make('created_from')->label('Desde'),
+                        \Filament\Forms\Components\DatePicker::make('created_until')->label('Hasta'),
+                    ])
+                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data): \Illuminate\Database\Eloquent\Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (\Illuminate\Database\Eloquent\Builder $query, $date): \Illuminate\Database\Eloquent\Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (\Illuminate\Database\Eloquent\Builder $query, $date): \Illuminate\Database\Eloquent\Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        if ($data['created_from'] ?? null) {
+                            $indicators[] = \Filament\Tables\Filters\Indicator::make('Desde: ' . \Carbon\Carbon::parse($data['created_from'])->toFormattedDateString())
+                                ->removeField('created_from');
+                        }
+                        if ($data['created_until'] ?? null) {
+                            $indicators[] = \Filament\Tables\Filters\Indicator::make('Hasta: ' . \Carbon\Carbon::parse($data['created_until'])->toFormattedDateString())
+                                ->removeField('created_until');
+                        }
+                        return $indicators;
+                    }),
+                Tables\Filters\SelectFilter::make('payment_method')
+                    ->options([
+                        'cash' => 'Efectivo',
+                        'qr' => 'QR',
+                    ])
+                    ->label('Método de Pago'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

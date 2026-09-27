@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class SaleItem extends Model
 {
     use HasFactory;
-    protected $fillable = ['sale_id', 'product_id', 'quantity', 'price'];
+    protected $guarded = [];
 
-    // Un Ã­tem pertenece a una venta y a un producto especÃ­fico
+    // Un ítem pertenece a una venta y a un producto específico
     public function sale()
     {
         return $this->belongsTo(Sale::class);
@@ -19,9 +19,16 @@ class SaleItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
-        // Este "Evento" se dispara automÃ¡ticamente cada vez que se guarda una venta
+        // Este "Evento" se dispara automáticamente cada vez que se guarda una venta
     protected static function booted()
     {
+                static::creating(function ($item) {
+            $producto = $item->product;
+            if ($producto) {
+                $item->unit_cost = $producto->average_cost;
+            }
+        });
+
         static::created(function ($item) {
             $producto = $item->product;
             
@@ -34,3 +41,4 @@ class SaleItem extends Model
     }
 
 }
+
