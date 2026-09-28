@@ -20,7 +20,7 @@ class User extends Authenticatable implements FilamentUser
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
-    public function canAccessPanel(Panel ): bool
+    public function canAccessPanel(Panel $panel): bool
     {
         return true;
     }
