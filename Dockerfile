@@ -1,4 +1,4 @@
-FROM php:8.3-apache
+FROM php:8.4-apache
 
 # Update packages and install required dependencies
 RUN apt-get update && apt-get install -y     libpng-dev     libjpeg-dev     libfreetype6-dev     libpq-dev     libicu-dev     libzip-dev     zip     unzip     git     curl
