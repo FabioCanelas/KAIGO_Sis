@@ -7,38 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 class SaleItem extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected \ = [];
 
-    // Un ítem pertenece a una venta y a un producto específico
     public function sale()
     {
-        return $this->belongsTo(Sale::class);
+        return \->belongsTo(Sale::class);
     }
 
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return \->belongsTo(Product::class);
     }
-        // Este "Evento" se dispara automáticamente cada vez que se guarda una venta
+
     protected static function booted()
     {
-                static::creating(function ($item) {
-            $producto = $item->product;
-            if ($producto) {
-                $item->unit_cost = $producto->average_cost;
-            }
-        });
-
-        static::created(function ($item) {
-            $producto = $item->product;
-            
-            if ($producto) {
-                // Le restamos al stock actual, la cantidad que se acaba de vender
-                $producto->stock = $producto->stock - $item->quantity;
-                $producto->save();
+        static::creating(function (\) {
+            \ = \->product;
+            if (\) {
+                \->unit_cost = \->average_cost;
             }
         });
     }
-
 }
-
