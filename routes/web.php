@@ -47,6 +47,7 @@ Route::get('/catalogo', function (\Illuminate\Http\Request $request) {
     return view('catalogo', compact('siteContent', 'allProducts', 'categories', 'currentCategory'));
 })->name('catalogo');
 
+
 use Illuminate\Support\Facades\Artisan;
 
 Route::get('/reset-db-now', function () {
@@ -55,7 +56,7 @@ Route::get('/reset-db-now', function () {
         Artisan::call('shield:generate', ['--all' => true]);
         Artisan::call('shield:super-admin', ['--user' => 1]);
         return 'Base de datos reseteada con exito!';
-    } catch (\Exception ) {
-        return 'Error: ' . ->getMessage();
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
     }
 });
