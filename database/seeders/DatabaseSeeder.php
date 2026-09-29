@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
+        User::create([
             'name' => 'Administrador Kivo',
             'email' => 'admin@kivo.com',
             'password' => bcrypt('password'), // Tu contraseña será: password
