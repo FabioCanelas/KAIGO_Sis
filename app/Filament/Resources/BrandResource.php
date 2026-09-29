@@ -51,7 +51,7 @@ class BrandResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('logo_path')
                     ->label('Logo')
-                    ->circular(),
+                    ->size(60)->square(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable()
