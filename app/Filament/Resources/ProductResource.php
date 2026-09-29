@@ -116,8 +116,8 @@ class ProductResource extends Resource
                 Tables\Columns\ImageColumn::make('images.image_path')
                     ->label('Foto')
                     ->limit(1)
-                    ->size(60)
-                    ->square(),
+                    ->size(80)
+                    ->circular(),
                 Tables\Columns\TextColumn::make('code')
                     ->label('Código')
                     ->searchable()
