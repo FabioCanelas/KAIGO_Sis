@@ -55,9 +55,9 @@ Route::get('/reset-db-now', function () {
         $output = '';
         Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
         $output .= 'MIGRATE: ' . Artisan::output() . '<br>';
-        Artisan::call('shield:generate', ['--all' => true]);
+        Artisan::call('shield:generate', ['--all' => true, '--panel' => 'admin']);
         $output .= 'SHIELD GEN: ' . Artisan::output() . '<br>';
-        Artisan::call('shield:super-admin', ['--user' => 1]);
+        Artisan::call('shield:super-admin', ['--user' => 1, '--panel' => 'admin']);
         $output .= 'SUPER ADMIN: ' . Artisan::output() . '<br>';
         return 'Base de datos reseteada con exito!<br>' . $output;
     } catch (\Exception $e) {
