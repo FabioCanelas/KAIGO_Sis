@@ -7,24 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 class SaleItem extends Model
 {
     use HasFactory;
-    protected \ = [];
+    protected $guarded = [];
 
     public function sale()
     {
-        return \->belongsTo(Sale::class);
+        return $this->belongsTo(Sale::class);
     }
 
     public function product()
     {
-        return \->belongsTo(Product::class);
+        return $this->belongsTo(Product::class);
     }
 
     protected static function booted()
     {
-        static::creating(function (\) {
-            \ = \->product;
-            if (\) {
-                \->unit_cost = \->average_cost;
+        static::creating(function ($item) {
+            $producto = $item->product;
+            if ($producto) {
+                $item->unit_cost = $producto->average_cost;
             }
         });
     }
