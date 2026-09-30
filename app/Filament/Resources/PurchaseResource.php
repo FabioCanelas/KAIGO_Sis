@@ -45,7 +45,26 @@ class PurchaseResource extends Resource
                     Forms\Components\Repeater::make('purchaseItems')->label('Detalle de Productos')
                         ->relationship()
                         ->schema([
-                            Forms\Components\Select::make('product_id')->label('Producto')->searchable()->preload()
+                            Forms\Components\Select::make('product_id')
+                                ->label('Producto')
+                                ->searchable(['name', 'code'])
+                                ->preload()
+->allowHtml()
+                                    ->getOptionLabelFromRecordUsing(function (\App\Models\Product $record) {
+                                        $name = $record->code ? "{$record->code} - {$record->name}" : $record->name;
+                                        $image = $record->images->where('is_primary', true)->first() ?? $record->images->first();
+                                        if ($image && $image->image_path) {
+                                            $url = \Illuminate\Support\Facades\Storage::url($image->image_path);
+                                            return "<div class='flex items-center gap-3'>
+                                                        <img src='{$url}' alt='{$record->name}' style='width: 32px; height: 32px; object-fit: cover; border-radius: 50%; border: 1px solid #ccc;'>
+                                                        <span>{$name}</span>
+                                                    </div>";
+                                        }
+                                        return "<div class='flex items-center gap-3'>
+                                                    <div style='width: 32px; height: 32px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #aaa; border: 1px solid #ccc;'>N/A</div>
+                                                    <span>{$name}</span>
+                                                </div>";
+                                    })
                                 ->relationship('product', 'name')
                                 ->required()
                                 ->disableOptionsWhenSelectedInSiblingRepeaterItems(),
