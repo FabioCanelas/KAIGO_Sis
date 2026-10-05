@@ -53,6 +53,7 @@ class SaleResource extends Resource
                             ->label('Descuento Global ($)')
                             ->numeric()
                             ->default(0)
+                            ->dehydrateStateUsing(fn ($state) => $state ?: 0)
                             ->live(onBlur: true),
 
                         Forms\Components\Hidden::make('total_amount')->default(0),
@@ -137,6 +138,7 @@ class SaleResource extends Resource
                                     ->numeric()
                                     ->default(0)
                                     ->minValue(0)
+                                    ->dehydrateStateUsing(fn ($state) => $state ?: 0)
                                     ->live(onBlur: true),
 
                             ])
