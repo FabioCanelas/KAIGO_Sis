@@ -48,8 +48,7 @@ class UserResource extends Resource
                         Forms\Components\Select::make('roles')
                             ->label('Rol (Permisos)')
                             ->relationship('roles', 'name')
-                            ->multiple()
-                            ->preload()
+                                                        ->preload()
                             ->required(),
                     ])->columns(2)
             ]);
