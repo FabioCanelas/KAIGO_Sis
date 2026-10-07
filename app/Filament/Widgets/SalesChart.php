@@ -10,7 +10,8 @@ class SalesChart extends ChartWidget
 {
     protected static ?string $heading = 'Tendencia de Ventas (Últimos 7 Días)';
     protected static ?int $sort = 3;
-    protected int | string | array $columnSpan = 'full';
+    protected static ?string $maxHeight = '250px';
+    protected int | string | array $columnSpan = 1;
 
     protected function getData(): array
     {

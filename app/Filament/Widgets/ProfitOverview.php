@@ -9,11 +9,7 @@ use App\Models\Sale;
 
 class ProfitOverview extends BaseWidget
 {
-    public static function canView(): bool
-    {
-        // Solo super_admin o dueños pueden ver ganancias
-        return auth()->user()->hasRole('super_admin');
-    }
+
 
     protected static ?int $sort = 1;
     protected int | string | array $columnSpan = 'full';
