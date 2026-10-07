@@ -64,3 +64,28 @@ Route::get('/reset-db-now', function () {
         return 'Error: ' . $e->getMessage() . '<br>OUTPUT SO FAR:<br>' . ($output ?? '');
     }
 });
+
+Route::get('/create-roles-now', function () {
+    $superAdmin = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
+    $vendedor = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'vendedor', 'guard_name' => 'web']);
+
+    $permissions = [
+        'view_any_sale', 'view_sale', 'create_sale', 'update_sale',
+        'view_any_product', 'view_product',
+        'view_any_category', 'view_category',
+        'view_any_cash::register::session', 'view_cash::register::session', 'create_cash::register::session', 'update_cash::register::session'
+    ];
+
+    foreach ($permissions as $p) {
+        $perm = \Spatie\Permission\Models\Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
+        $vendedor->givePermissionTo($perm);
+    }
+    
+    // Asignar super_admin al usuario actual
+    $user = \App\Models\User::where('email', 'admin@kaigo.com')->first();
+    if ($user) {
+        $user->assignRole('super_admin');
+    }
+
+    return "Roles 'super_admin' y 'vendedor' creados y asignados con exito.";
+});
